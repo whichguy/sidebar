@@ -80,6 +80,7 @@
             position: relative;
             transition: all 0.3s ease;
             overflow: hidden;
+            white-space: normal;   /* Ensure wrapping */
             cursor: pointer; /* Indicates the entire message is clickable */
         }
 
@@ -731,15 +732,15 @@
                 }
 
                 /**
-                 * Adds a log message to the log list in the UI.
-                 * If the message exceeds the maximum length, it will display a toggle chevron.
+                 * Adds a new log message to the log list in the UI.
+                 * If the message is longer than 100 characters, it will be truncated with a toggle chevron.
                  *
                  * @param {string} message - The log message to display.
                  * @param {string} type - The type of log message (e.g., 'info', 'error').
                  * @param {number} maxLines - The maximum number of log lines to keep.
                  */
                 function addToLogList(message, type = 'info', maxLines = 3000) {
-                    const MAX_MESSAGE_LENGTH = 100; // Define the maximum length for a log message
+                    const MAX_MESSAGE_LENGTH = 100;  // Define the threshold for truncation
                     const now = new Date();
                     const timestamp = now.toISOString();
                     const currentSeconds = now.getSeconds();
@@ -751,15 +752,15 @@
                         lastLogTimestamp = currentSeconds;
                     }
 
-                    // Determine if the message needs to be truncated
-                    const isTruncated = message.length > MAX_MESSAGE_LENGTH;
-                    const displayMessage = message; // Use full message
+                    // Determine if the message is longer than the defined threshold
+                    const isLongMessage = message.length > MAX_MESSAGE_LENGTH;
+                    const isTruncated = isLongMessage;  // Messages longer than 100 characters are truncated
 
-                    // Construct the log message HTML with conditional chevron
+                    // Construct the log message HTML
                     const listItem = `
                         <li class="list-group-item list-group-item-${type}" data-timestamp="${timestamp}">
                             <div class="log-message ${isTruncated ? 'truncated' : ''}" role="button" aria-expanded="${!isTruncated ? 'true' : 'false'}" tabindex="0">
-                                ${displayMessage}
+                                ${message}  <!-- Allow message to wrap or be truncated based on length -->
                                 ${isTruncated ? `<span class="toggle-arrow" tabindex="-1" role="button" aria-label="Expand message"><i class="bi bi-chevron-right"></i></span>` : ''}
                             </div>
                             ${formattedTime ? `<div class="log-time">${formattedTime}</div>` : ''}
@@ -776,6 +777,7 @@
                         }
                     }
                 }
+
 
                 /**
                  * Binds event handlers for UI interactions, such as clearing logs,

@@ -103,7 +103,8 @@ function sb_longRunningFunction(arg1, arg2) {
     sidebar.log("Starting the process...");
     Utilities.sleep(400); // Simulate process delay
 
-    sidebar.log("Part way through the process...");
+    sidebar.log("We are part way through the process, making steady progress and moving closer to the next step.");
+
     Utilities.sleep(200); // Simulate process delay
 
     for (let i = 0; i < 5; i++) {
@@ -111,7 +112,8 @@ function sb_longRunningFunction(arg1, arg2) {
         Utilities.sleep(100); // Simulate loop delay
     }
 
-    sidebar.log("This is a very long message intended to test the UI's collapsible functionality...");
+    sidebar.log("This is a very long message intended to test the UI's collapsible functionality. This message is extended further to meet the requirement of being 700 characters long. By adding more content, we can ensure that the message testing for the collapsible UI is thorough. The message should be able to expand when clicked and collapse when required, ensuring that the content is properly displayed. Here's more filler content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis.");
+
     Utilities.sleep(2000); // Simulate longer delay
 
     sidebar.log("Finished the process...");
