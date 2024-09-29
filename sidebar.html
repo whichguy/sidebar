@@ -296,7 +296,7 @@
                                 });
                             }
                         })
-                        .getProcessStatus(processId);
+                        .sb_getProcessStatus(processId);
                 }, interval);
             };
 
@@ -320,7 +320,7 @@
                                         doOneTimePoll(75, processId);
                                     }
                                 })
-                                .getProcessStatus(processId);
+                                .sb_getProcessStatus(processId);
                         }, defaultPollInterval);
 
                         /**
@@ -347,7 +347,7 @@
                         target
                             .withSuccessHandler(onSuccess)
                             .withFailureHandler(onError)
-                            .invokeWithId(prop, processId, ...args);
+                            .sb_invokeWithId(prop, processId, ...args);
                     }
                 }
             };
@@ -443,7 +443,7 @@
                 async function loadConfigForFunction(functionName, args) {
                     try {
                         // Simulate an async call to the server to fetch user properties
-                        const properties = await server.getUserPropertiesForFunction(functionName);
+                        const properties = await server.sb_getUserPropertiesForFunction(functionName);
 
                         // Check if properties are found and are valid
                         if (properties && typeof properties === 'object') {
@@ -719,8 +719,8 @@
                         });
 
                         // Check if the server has the saveUserProperties function
-                        if (server && typeof server.saveUserProperties === 'function') {
-                            server.saveUserProperties(functionName, properties);
+                        if (server && typeof server.sb_saveUserPropertiesForFunction === 'function') {
+                            server.sb_saveUserPropertiesForFunction(functionName, properties);
                         } else {
                             console.warn(`saveUserProperties is not a function on the server. Properties for ${functionName} will not be saved.`);
                         }
@@ -956,7 +956,7 @@
 
 
                 <!-- Include the external document.ready() function -->
-                <?!= include('main') ?>
+                <?!= sb_include('main') ?>
 
                 // Expose public methods
                 return {
