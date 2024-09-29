@@ -522,12 +522,49 @@
                                 const inputId = `input-${config.functionName}-${arg.label.replace(/\s+/g, '-')}`; // Replace spaces with dashes
 
                                 if (arg.visible !== false) { // Only create input fields for visible arguments
-                                    // Create input element based on the argument type
-                                    const input = $('<input>')
-                                        .attr('type', arg.type)
-                                        .addClass('form-control mb-2')
-                                        .attr('placeholder', arg.label)
-                                        .attr('id', inputId);
+                                    let input;
+
+                                    // Handle date type specifically to format the default value properly
+                                    if (arg.type === 'date') {
+                                        let formattedDate = '';
+
+                                        // Check if the defaultValue is a valid date (Date object or valid date string)
+                                        if (arg.defaultValue) {
+                                            let dateValue;
+
+                                            // If defaultValue is a string, attempt to parse it as a date
+                                            if (typeof arg.defaultValue === 'string') {
+                                                dateValue = new Date(arg.defaultValue);
+                                            } else if (arg.defaultValue instanceof Date) {
+                                                dateValue = arg.defaultValue;
+                                            }
+
+                                            // Check if the parsed date is valid
+                                            if (!isNaN(dateValue?.getTime())) {
+                                                formattedDate = dateValue.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+                                            } else {
+                                                console.error("Invalid date value for:", arg.label);
+                                            }
+                                        }
+
+                                        input = $('<input>')
+                                            .attr('type', 'date')
+                                            .addClass('form-control mb-2')
+                                            .attr('id', inputId)
+                                            .val(formattedDate); // Set the default value for date type
+                                    } else {
+                                        // Create input element based on the argument type
+                                        input = $('<input>')
+                                            .attr('type', arg.type)
+                                            .addClass('form-control mb-2')
+                                            .attr('id', inputId)
+                                            .attr('placeholder', arg.label);
+
+                                        // Assign default value if it's available and not a date
+                                        if (arg.defaultValue) {
+                                            input.val(arg.defaultValue);
+                                        }
+                                    }
 
                                     // Create form group with label and input
                                     const formGroup = $('<div>').addClass('form-group').append(
@@ -561,6 +598,9 @@
                         alert("An error occurred while generating input fields and buttons. Please check the console for more details.");
                     }
                 }
+
+
+
 
                 /**
                  * Handles button click events by validating inputs, invoking server functions,

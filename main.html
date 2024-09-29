@@ -11,7 +11,7 @@
                         functionName: 'longRunningFunction',
                         groupLabel: 'Process Controls',
                         args: [
-                            { label: 'Start Date', type: 'date', visible: true },
+                            { label: 'Start Date', type: 'date',  defaultValue: new Date(new Date().setDate(new Date().getDate() - 7)), visible: true },
                             { label: 'End Date', type: 'date', required: true, visible: true },
                             { label: 'userId', type: 'hidden', defaultValue: '12345', visible: false },
                             { label: 'sessionToken', type: 'hidden', defaultValue: 'abcde12345', visible: false }
