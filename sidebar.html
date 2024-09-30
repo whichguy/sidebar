@@ -476,9 +476,10 @@
                                 alert("Failed to load configuration properties. Please try again.");
                                 reject(error);
                             })
-                            .sb_getAllowedProperties();
+                            .sb_getConfigProperties(); // Ensure this matches the server-side function name
                     });
                 }
+
                 /**
                  * Loads all configurations for each button configuration.
                  * This function iterates through each button config and loads its properties.
@@ -589,12 +590,32 @@
                                 input.val(properties[prop.key]);
                             }
 
-                            formGroup.append(label, input);
+                            // Create a select dropdown for scope
+                            const scopeSelect = $('<select>')
+                                .addClass('form-select mt-2')
+                                .attr('id', `${prop.key}-scope`)
+                                .attr('required', true);
+
+                            // Determine allowed scopes based on property definition
+                            const allowedScopes = getAllowedScopes(prop.scope);
+
+                            // Populate scope options
+                            allowedScopes.forEach(scopeOption => {
+                                const option = $('<option>').val(scopeOption).text(scopeOption.charAt(0).toUpperCase() + scopeOption.slice(1));
+                                if (scopeOption === prop.scope) {
+                                    option.attr('selected', 'selected');
+                                }
+                                scopeSelect.append(option);
+                            });
+
+                            // Append label, input, and scope selector to the form group
+                            formGroup.append(label, input, $('<label>').attr('for', `${prop.key}-scope`).addClass('mt-2').text('Scope'));
+                            formGroup.append(scopeSelect);
                             form.append(formGroup);
                         });
 
                         $('#configContent').append(form);
-                        $('#configContent').append(`<button id="saveConfigBtn" class="btn btn-success">Save Configuration</button>`);
+                        $('#configContent').append(`<button id="saveConfigBtn" class="btn btn-success mt-3">Save Configuration</button>`);
 
                         // Initialize tooltips
                         initializeTooltips();
@@ -604,6 +625,9 @@
                             event.preventDefault(); // Prevent form submission
                             saveConfigProperties();
                         });
+
+                        // Show the save button after loading configurations
+                        $('#saveConfigBtn').show();
                     }
                 }
 
@@ -613,9 +637,12 @@
                 function saveConfigProperties() {
                     try {
                         const configData = localAllowedProperties.map(prop => {
+                            const value = $(`#${prop.key}`).val();
+                            const scope = $(`#${prop.key}-scope`).val();
                             return {
                                 key: prop.key,
-                                value: $(`#${prop.key}`).val()
+                                value: value,
+                                scope: scope
                             };
                         });
 
@@ -623,6 +650,7 @@
                         google.script.run
                             .withSuccessHandler((message) => {
                                 addToLogList(message, 'info');
+                                showToast(); // Display success toast
                             })
                             .withFailureHandler((error) => {
                                 console.error("Failed to save configurations:", error);
@@ -636,6 +664,15 @@
                 }
 
 
+
+                /**
+                 * Shows a Bootstrap toast notification.
+                 */
+                function showToast() {
+                    const toastEl = $('#saveSuccessToast');
+                    const toast = new bootstrap.Toast(toastEl[0], { delay: 3000 });
+                    toast.show();
+                }
 
                 /**
                  * Adds a new button configuration to the specificButtonConfigs array.
@@ -857,6 +894,24 @@
                         alert("An error occurred while processing your request. Please check the console for more details.");
                     }
                 }
+               /**
+                * Determines the allowed scopes for a property based on its defined scope.
+                *
+                * @param {string} propScope - The defined scope of the property.
+                * @returns {Array<string>} - Array of allowed scope strings.
+                */
+               function getAllowedScopes(propScope) {
+                   switch (propScope.toLowerCase()) {
+                       case 'script':
+                           return ['user', 'document', 'script'];
+                       case 'document':
+                           return ['user', 'document'];
+                       case 'user':
+                           return ['user'];
+                       default:
+                           return [];
+                   }
+               }
 
                 /**
                  * Saves user properties for a specific function by sending them to the server.
